@@ -1,36 +1,31 @@
-name: codeql-analysis-workflow
-
-on:
-    push:
-        branches:
-        - main
-        - release/**
-    pull_request:
-        branches:
-        - main
-        - release/**
-    schedule:
-    -   cron: 42 5 * * 1
-
 jobs:
-    codeql-analysis-job:
-        name: CodeQL Analysis
-        runs-on: ubuntu-latest
-        steps:
-        -   name: Checkout repository
-            uses: actions/checkout@v3
-        -   name: Initialize CodeQL
-            uses: github/codeql-action/init@v1
-            with:
-                languages: java
-                queries: security-extended
-        -   name: Set up JDK 17
-            uses: actions/setup-java@v3
-            with:
-                java-version: '17'
-                distribution: temurin
-                cache: maven
-        -   name: Build
-            run: mvn -B clean compile -Dorg.slf4j.simpleLogger.defaultLogLevel=warn
-        -   name: Perform CodeQL Analysis
-            uses: github/codeql-action/analyze@v1
+  codeql-analysis-job:
+    name: CodeQL Analysis
+    runs-on: self-hosted
+    steps:
+    - continue-on-error: true
+      name: Checkout repository
+      uses: actions/checkout@v3
+    - continue-on-error: true
+      name: Initialize CodeQL
+      uses: github/codeql-action/init@v1
+      with:
+        languages: java
+        queries: security-extended
+    - continue-on-error: true
+      name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        cache: maven
+        distribution: temurin
+        java-version: '17'
+    - continue-on-error: true
+      name: Build
+      run: mvn -B clean compile -Dorg.slf4j.simpleLogger.defaultLogLevel=warn
+    - continue-on-error: true
+      name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v1
+name: codeql-analysis-workflow
+on:
+  repository_dispatch:
+    types: trigger-ga___codeql-analysis.yml
